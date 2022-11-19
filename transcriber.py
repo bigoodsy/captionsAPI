@@ -1,6 +1,6 @@
 import torch
 import whisper
-
+import os
 class Transcriber:
   def __init__(self):
     torch.set_default_tensor_type('torch.cuda.FloatTensor') 
@@ -10,6 +10,6 @@ class Transcriber:
     result = self.model.transcribe(filename) 
     #print(result["text"][:240])
     
-    file = open(filename + ".txt", "w", encoding="utf-8") 
+    file = open(os.path.join("api_data", filename) + ".txt", "w", encoding="utf-8") 
     file.write(result["text"])
     file.close()

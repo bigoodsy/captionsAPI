@@ -1,7 +1,11 @@
+import json
 import os
-from flask import Flask, flash, request, redirect, url_for
+
+from flask import Flask, flash, redirect, request, url_for
 from werkzeug.utils import secure_filename
+
 from transcriber import Transcriber
+
 UPLOAD_FOLDER = 'api_data'
 ALLOWED_EXTENSIONS = {'wav','png','jpg'}
 
@@ -27,14 +31,24 @@ def upload_file():
             flash('No selected file')
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            four = Transcriber()
+            transcriber = Transcriber()
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            four.transcribe(filename)
+            transcriber.transcribe(filename)
             
-          
+
             return redirect(url_for('upload_file',
                                     filename=filename))
+    elif request.args.get("filename"):
+        #print(request.args["filename"])
+        #print(request.remote_addr)
+
+        text_file = open(os.path.join(app.config['UPLOAD_FOLDER'], request.args["filename"]) + ".txt", 'r')
+        text = text_file.read()
+        print(text_file.read())
+        
+        return json.dumps({'data':text})
+
     return '''
     <!doctype html>
     <title>Upload new File</title>
